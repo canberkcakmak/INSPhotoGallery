@@ -38,6 +38,7 @@ import UIKit
     @objc open var image: UIImage?
     @objc open var thumbnailImage: UIImage?
     @objc open var isDeletable: Bool
+    var headers = [AnyHashable: Any]()
     
     var imageURL: URL?
     var thumbnailImageURL: URL?
@@ -50,10 +51,11 @@ import UIKit
         self.isDeletable = false
     }
     
-    public init(imageURL: URL?, thumbnailImageURL: URL?) {
+    public init(imageURL: URL?, thumbnailImageURL: URL?, headers: [AnyHashable: Any]) {
         self.imageURL = imageURL
         self.thumbnailImageURL = thumbnailImageURL
         self.isDeletable = false
+        self.headers = headers
     }
     
     public init (imageURL: URL?, thumbnailImage: UIImage?) {
@@ -78,7 +80,9 @@ import UIKit
     }
     
     open func loadImageWithURL(_ url: URL?, completion: @escaping (_ image: UIImage?, _ error: Error?) -> ()) {
-        let session = URLSession(configuration: URLSessionConfiguration.default)
+        let configuration = URLSessionConfiguration.default
+        configuration.httpAdditionalHeaders = self.headers
+        let session = URLSession(configuration: configuration)
         
         if let imageURL = url {
             session.dataTask(with: imageURL, completionHandler: { (response, data, error) in
